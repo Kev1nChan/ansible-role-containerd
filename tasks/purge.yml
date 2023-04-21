@@ -1,0 +1,58 @@
+- name: Stop containerd service
+  ansible.builtin.systemd:
+    name: "{{ containerd_service_name }}"
+    state: stopped
+    enabled: false
+    daemon_reload: true
+
+- name: Remove containerd systemd unit file
+  ansible.builtin.file:
+    path: "{{ ('/etc/systemd/system', containerd_service_name ~ '.service') | path_join }}"
+    state: absent
+
+- name: Remove containerd configuration directory
+  ansible.builtin.file:
+    path: "{{ containerd_config_path }}"
+    state: absent
+
+- name: Remove containerd binary file
+  ansible.builtin.file:
+    path: "{{ (containerd_install_path, item) | path_join }}"
+    state: absent
+  with_items:
+    - containerd
+    - containerd-shim
+    - containerd-shim-runc-v1
+    - containerd-shim-runc-v2
+    - containerd-stress
+    - ctr
+
+- name: Remove runc binary file
+  ansible.builtin.file:
+    path: "{{ (containerd_runc_install_path, item) | path_join }}"
+    state: absent
+  with_items:
+    - runc
+
+- name: Remove cni binary files
+  ansible.builtin.file:
+    path: "{{ (containerd_cni_install_path, item) | path_join }}"
+    state: absent
+  with_items:
+    - bandwidth
+    - bridge
+    - dhcp
+    - dummy
+    - firewall
+    - host-device
+    - host-local
+    - ipvlan
+    - loopback
+    - macvlan
+    - portmap
+    - ptp
+    - sbr
+    - static
+    - tuning
+    - vlan
+    - vrf

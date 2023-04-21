@@ -1,0 +1,24 @@
+---
+# defaults file for containerd
+# containerd 安装包
+# containerd_package: containerd-1.7.0-linux-amd64.tar.gz
+# containerd 安装包下载地址
+containerd_download_url: https://github.com/containerd/containerd/releases/download/v1.7.0/containerd-1.7.0-linux-amd64.tar.gz
+# containerd 服务名
+containerd_service_name: containerd
+# containerd 安装路径
+containerd_install_path: /usr/local/bin
+# containerd 配置文件路径
+containerd_config_path: /etc/containerd
+# runc 安装包
+# containerd_runc_package: runc.amd64
+# runc 安装包下载地址
+containerd_runc_download_url: https://github.com/opencontainers/runc/releases/download/v1.1.6/runc.amd64
+# runc 安装路径
+containerd_runc_install_path: /usr/local/sbin
+# cni 安装包
+# containerd_cni_package: cni-plugins-linux-amd64-v1.2.0.tgz
+# cni 安装包下载地址
+containerd_cni_download_url: https://github.com/containernetworking/plugins/releases/download/v1.2.0/cni-plugins-linux-amd64-v1.2.0.tgz
+# cni 安装路径
+containerd_cni_install_path: /opt/cni/bin

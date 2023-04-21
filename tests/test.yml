@@ -1,0 +1,22 @@
+---
+- name: Install containerd
+  hosts: containerd
+  tags:
+    - containerd
+    - install
+  roles:
+    - role: containerd
+      containerd_package: containerd-1.7.0-linux-amd64.tar.gz
+      containerd_runc_package: runc.amd64
+      containerd_cni_package: cni-plugins-linux-amd64-v1.2.0.tgz
+
+- name: Uninstall containerd
+  hosts: containerd
+  tags:
+    - containerd
+    - uninstall
+  tasks:
+    - name: Uninstall containerd
+      ansible.builtin.include_role:
+        name: containerd
+        tasks_from: purge.yml

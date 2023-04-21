@@ -1,0 +1,109 @@
+---
+# tasks file for containerd
+- name: Unarchive containerd binaries
+  ansible.builtin.unarchive:
+    src: "{{ containerd_download_url }}"
+    dest: "{{ containerd_bin_dir }}"
+    remote_src: true
+    creates: "{{ containerd_bin_dir }}/containerd"
+    extra_opts:
+      - --strip-components=1
+    owner: root
+    group: root
+    mode: 0755
+  when:
+    - containerd_package is not defined
+    - containerd_download_url is defined
+  notify: start containerd
+
+- name: Unarchive containerd binaries
+  ansible.builtin.unarchive:
+    src: "{{ containerd_package }}"
+    dest: "{{ containerd_install_path }}"
+    creates: "{{ (containerd_install_path, 'containerd') | path_join }}"
+    extra_opts:
+      - --strip-components=1
+    owner: root
+    group: root
+    mode: 0755
+  when: containerd_package is defined
+  notify: start containerd
+
+- name: Create containerd configuration directory
+  ansible.builtin.file:
+    path: "{{ containerd_config_path }}"
+    state: directory
+    owner: root
+    group: root
+    mode: 0755
+
+- name: Create containerd configuration file
+  ansible.builtin.template:
+    src: containerd.toml.j2
+    dest: "{{ (containerd_config_path, 'config.toml') | path_join }}"
+    owner: root
+    group: root
+    mode: 0644
+    backup: true
+  notify: restart containerd
+
+- name: Create containerd systemd unit file
+  ansible.builtin.template:
+    src: containerd.service.j2
+    dest: "{{ ('/etc/systemd/system', containerd_service_name ~ '.service') | path_join }}"
+    owner: root
+    group: root
+    mode: 0644
+  notify: restart containerd
+
+- name: Upload runc binary file
+  ansible.builtin.copy:
+    src: "{{ containerd_runc_download_url }}"
+    dest: "{{ (containerd_runc_install_path, 'runc') | path_join }}"
+    remote_src: true
+    owner: root
+    group: root
+    mode: 0755
+  when:
+    - containerd_runc_download_url is defined
+    - containerd_runc_package is not defined
+
+- name: Upload runc binary file
+  ansible.builtin.copy:
+    src: "{{ containerd_runc_package }}"
+    dest: "{{ (containerd_runc_install_path, 'runc') | path_join }}"
+    owner: root
+    group: root
+    mode: 0755
+  when: containerd_runc_package is defined
+
+- name: Create cni install directory
+  ansible.builtin.file:
+    path: "{{ containerd_cni_install_path }}"
+    state: directory
+    owner: root
+    group: root
+    mode: 0755
+
+- name: Unarchive cni binaries
+  ansible.builtin.unarchive:
+    src: "{{ containerd_cni_download_url }}"
+    dest: "{{ containerd_cni_install_path }}"
+    remote_src: true
+    creates: "{{ (containerd_cni_install_path, 'cni') | path_join }}"
+    owner: root
+    group: root
+    mode: 0755
+  when:
+    - containerd_cni_download_url is defined
+    - containerd_cni_package is not defined
+
+- name: Unarchive cni binaries
+  ansible.builtin.unarchive:
+    src: "{{ containerd_cni_package }}"
+    dest: "{{ containerd_cni_install_path }}"
+    creates: "{{ (containerd_cni_install_path, 'cni') | path_join }}"
+    owner: root
+    group: root
+    mode: 0755
+  when: containerd_cni_package is defined
